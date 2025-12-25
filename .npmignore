@@ -1,0 +1,24 @@
+# 源代码（只发布编译后的 dist）
+src/
+*.ts
+!*.d.ts
+
+# 配置文件
+tsdown.config.ts
+fstestcase.config.*
+!fstestcase.config.example.ts
+
+# 开发文件
+.kiro/
+.git/
+.DS_Store
+node_modules/
+
+# 文档和测试
+*.md
+!README.md
+
+# 锁文件
+pnpm-lock.yaml
+package-lock.json
+yarn.lock

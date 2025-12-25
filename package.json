@@ -1,0 +1,51 @@
+{
+  "name": "fs-testcase-mcp",
+  "version": "0.0.1",
+  "description": "基于 MCP（Model Context Protocol）的飞书文档测试用例提取工具，可自动从飞书文档中提取测试用例数据，供 AI 工具使用",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "fs-document-mcp": "dist/index.mjs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsx src/index.ts",
+    "build": "tsdown && chmod 755 dist/index.mjs",
+    "serve": "pnpm build && (node dist/index.mjs --id=$FS_APP_ID --secret=$FS_APP_SECRET & npx @modelcontextprotocol/inspector)"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "feishu",
+    "test-case",
+    "testing",
+    "automation",
+    "ai-tools"
+  ],
+  "author": "zf254341@gmail.com",
+  "license": "ISC",
+  "packageManager": "pnpm@10.24.0",
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsdown": "^0.18.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.0",
+    "commander": "^14.0.2",
+    "zod": "^4.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/czff/fs-testcase-mcp.git"
+  },
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "fstestcase.config.example.ts"
+  ]
+}

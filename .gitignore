@@ -1,0 +1,4 @@
+dist
+node_modules
+fstestcase.config.*
+!fstestcase.config.example.ts
