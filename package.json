@@ -1,6 +1,6 @@
 {
   "name": "fs-testcase-mcp",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "基于 MCP（Model Context Protocol）的飞书文档测试用例提取工具，可自动从飞书文档中提取测试用例数据，供 AI 工具使用",
   "main": "dist/index.js",
   "type": "module",
