@@ -4,7 +4,7 @@ import { findFromIndex, myFetch } from "./utils";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { NAME, PROMPT_TIPS, VERSION } from "./constant";
+import { NAME, PROMPT_TIPS, VERSION, REPORT_TEMPLATE } from "./constant";
 import { Command } from "commander";
 import { pathToFileURL } from "url";
 import { existsSync } from "fs";
@@ -236,9 +236,9 @@ async function main() {
   server.registerTool(
     "fs_document_mcp_test_case",
     {
-      title: "获取测试用例摘要（支持分页）",
+      title: "获取测试用例摘要（支持分页pageSize字段）",
       description:
-        "根据飞书文档ID获取测试用例摘要，支持分页获取，避免上下文过长。如果返回 hasMore=true，需要使用 pageToken 继续获取下一页数据。",
+        "根据飞书文档ID获取测试用例摘要，支持分页获取，避免上下文过长。如果返回 hasMore=true，需要使用 pageToken 继续获取下一页数据。分批次获取测试用例，执行当前批次的测试用例后再获取下批次测试用例",
       inputSchema: {
         documentId: z.string().describe("飞书文档ID"),
         pageSize: z
@@ -329,18 +329,34 @@ async function main() {
       });
 
       // 构建响应提示
+      const currentBatchCount = summary.length;
       const paginationHint = result.hasMore
-        ? `\n还有更多数据未获取！\n请继续调用此工具，并传入参数：\n- documentId: "${documentId}"\n- pageToken: "${result.nextPageToken}"\n- pageSize: ${pageSize}\n`
-        : "\n✅ 已获取所有测试用例数据";
+        ? `\n **当前批次：${currentBatchCount} 条用例**
+      **请立即执行以上 ${currentBatchCount} 条测试用例**，完成后再获取下一批。
+
+      获取下一批用例时，请调用此工具并传入：
+      - documentId: "${documentId}"
+      - pageToken: "${result.nextPageToken}"
+      - pageSize: ${pageSize}
+
+      ⚠️ 注意：请勿跳过当前批次，必须先执行完当前用例再继续获取！`
+        : `\n✅ **已获取最后一批测试用例（${currentBatchCount} 条）**
+      📋 请执行以上用例，完成后请依据以下模板汇总所有批次结果生成完整测试报告：
+
+      ${REPORT_TEMPLATE}`;
 
       // 元信息
       const payload = {
         meta: {
           total: result.total,
+          currentBatchCount: summary.length,
           hasMore: result.hasMore,
           nextPageToken: result.nextPageToken,
           fields: targetFields,
           pageSize,
+          instruction: result.hasMore
+            ? "请先执行当前批次的所有用例，完成后再使用 nextPageToken 获取下一批"
+            : "这是最后一批用例，执行完成后请生成完整测试报告",
         },
         items: summary,
       };
